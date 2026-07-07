@@ -10,6 +10,12 @@ curl -fsSL https://raw.githubusercontent.com/tuanpham-dev/nvim-config/main/insta
 
 This clones the repo to `~/.local/share/nvim-config`, symlinks `~/.config/nvim` to it (backing up any existing config first), and installs all plugins. Safe to re-run — it updates the existing install instead of failing.
 
+If you just pushed a change to `install.sh` and re-running picks up the old behavior, GitHub's raw-content CDN is likely still serving a cached copy (typically clears in a few minutes). Force a fresh fetch instead of waiting:
+
+```
+curl -fsSL "https://raw.githubusercontent.com/tuanpham-dev/nvim-config/main/install.sh?$(date +%s)" | bash
+```
+
 ### Requirements
 
 - `git`
