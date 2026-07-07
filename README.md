@@ -12,13 +12,18 @@ This clones the repo to `~/.local/share/nvim-config`, symlinks `~/.config/nvim` 
 
 ### Requirements
 
-- Neovim 0.12+
 - `git`
 - A C compiler + `make` (for building treesitter parsers and `telescope-fzf-native`)
 - `ripgrep` (for Telescope live grep)
 - Node.js (for Mason to install LSP servers: `ts_ls`, `cssls`, `html`, `jsonls`, `emmet_language_server`)
 
-The installer checks all of these and warns about anything missing.
+The installer downloads these automatically if missing, since a fresh machine usually won't have either yet:
+- **Neovim 0.12+** — treesitter's `main` branch requires it and crashes on older versions. Downloaded from the [official releases](https://github.com/neovim/neovim/releases) to `~/.local/opt/nvim-<platform>`, symlinked into `~/.local/bin/nvim`.
+- **tree-sitter CLI** — most parsers (`lua`, `json`, `html`, `css`, `vim`, `markdown`, `vimdoc`) need the standalone CLI to compile, not just a C compiler. Downloaded from [tree-sitter releases](https://github.com/tree-sitter/tree-sitter/releases) to `~/.local/bin/tree-sitter`.
+
+Everything else (C toolchain, ripgrep, Node.js) is checked and warned about, not auto-installed.
+
+If `~/.local/bin` isn't on your `PATH` (or is, but after an older system `nvim`), the installer warns you to fix your shell profile — it still works for the current run either way.
 
 ### After installing
 
