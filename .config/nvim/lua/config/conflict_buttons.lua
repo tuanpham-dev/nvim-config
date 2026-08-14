@@ -24,6 +24,23 @@ local BUTTONS = {
   { label = "Accept None", hl = "Comment", action = "none", key = "c0" },
 }
 
+-- git-conflict.nvim's own GitConflictChoose{Ours,Theirs,Both,None} commands
+-- are broken -- their body is a bare `<Plug>(...)` string with no `normal`
+-- prefix, so Neovim errors trying to run it as an Ex command line (verified
+-- empirically). Its `choose()` function does support resolving every
+-- conflict at once, but only when called while a real visual selection is
+-- active (it loops over conflicts inside the '<,'> range instead of just the
+-- one under the cursor) -- so "accept all" is driven the same way a user
+-- would do it by hand: select the whole buffer, then feed the same
+-- default-mapped key (`co`/`ct`/`cb`/`c0`) the single-conflict bar already
+-- shows, letting git-conflict's own visual-mode branch do the resolving.
+local ACCEPT_ALL = {
+  { lhs = "<leader>gao", key = "co", desc = "Accept ALL conflicts: current (ours)" },
+  { lhs = "<leader>gat", key = "ct", desc = "Accept ALL conflicts: incoming (theirs)" },
+  { lhs = "<leader>gab", key = "cb", desc = "Accept ALL conflicts: both" },
+  { lhs = "<leader>ga0", key = "c0", desc = "Accept ALL conflicts: none (remove all)" },
+}
+
 -- Bar text/highlights and each button's [start_col, end_col) are identical
 -- for every conflict, so build them once.
 local bar_parts, bar_segments = {}, {}
@@ -151,6 +168,11 @@ function M.setup()
       vim.keymap.set("n", "<LeftMouse>", function()
         return handle_click(bufnr)
       end, { buffer = bufnr, expr = true, desc = "Conflict button click" })
+      for _, m in ipairs(ACCEPT_ALL) do
+        vim.keymap.set("n", m.lhs, function()
+          vim.cmd("normal ggVG" .. m.key)
+        end, { buffer = bufnr, desc = m.desc })
+      end
       vim.api.nvim_create_autocmd("TextChanged", {
         group = group,
         buffer = bufnr,
@@ -169,6 +191,9 @@ function M.setup()
       vim.b[bufnr].conflict_buttons_active = false
       clear(bufnr)
       pcall(vim.keymap.del, "n", "<LeftMouse>", { buffer = bufnr })
+      for _, m in ipairs(ACCEPT_ALL) do
+        pcall(vim.keymap.del, "n", m.lhs, { buffer = bufnr })
+      end
     end,
   })
 end

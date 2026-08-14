@@ -77,6 +77,25 @@ return {
     end,
   },
 
+  -- VS Code-style scrollbar with colored git-hunk marks on the right edge
+  -- (add/change/delete from gitsigns). The gitsigns handler is a separate
+  -- module that must be required and set up on its own -- setting
+  -- handlers.gitsigns = true alone does not wire it up.
+  {
+    "petertriho/nvim-scrollbar",
+    event = "BufReadPost",
+    dependencies = { "lewis6991/gitsigns.nvim" },
+    opts = {
+      handlers = {
+        gitsigns = true,
+      },
+    },
+    config = function(_, opts)
+      require("scrollbar").setup(opts)
+      require("scrollbar.handlers.gitsigns").setup()
+    end,
+  },
+
   -- Session management (replaces vim-startify's session save/restore)
   {
     "folke/persistence.nvim",

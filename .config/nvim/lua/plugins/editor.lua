@@ -69,6 +69,20 @@ return {
         local gitsigns = require("gitsigns")
         vim.keymap.set("n", "<leader>gb", gitsigns.toggle_current_line_blame, { buffer = bufnr, desc = "Toggle inline git blame" })
         vim.keymap.set("n", "<leader>gB", function() gitsigns.blame_line({ full = true }) end, { buffer = bufnr, desc = "Show full git blame for line" })
+        vim.keymap.set("n", "]c", function()
+          if vim.wo.diff then
+            vim.cmd.normal({ "]c", bang = true })
+          else
+            gitsigns.nav_hunk("next")
+          end
+        end, { buffer = bufnr, desc = "Next git hunk" })
+        vim.keymap.set("n", "[c", function()
+          if vim.wo.diff then
+            vim.cmd.normal({ "[c", bang = true })
+          else
+            gitsigns.nav_hunk("prev")
+          end
+        end, { buffer = bufnr, desc = "Previous git hunk" })
       end,
     },
   },
