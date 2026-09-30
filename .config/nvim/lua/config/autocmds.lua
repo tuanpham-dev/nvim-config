@@ -42,3 +42,15 @@ autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "IndentGuides", { fg = "#343845", bg = "NONE" })
   end,
 })
+
+-- Forward every yank into the unnamed register to the client clipboard via
+-- OSC 52 (vim-oscyank, see plugins/misc.lua) — leaves clipboard=unnamedplus
+-- untouched, so this only fires on an actual yank, not every delete.
+autocmd("TextYankPost", {
+  pattern = "*",
+  callback = function()
+    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
+      vim.cmd('OSCYankRegister "')
+    end
+  end,
+})
